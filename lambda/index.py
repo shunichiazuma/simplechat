@@ -82,7 +82,7 @@ def lambda_handler(event, context):
         print("Calling FastAPI endpoint with payload:", json.dumps(request_payload))
 
         # FastAPIエンドポイントを呼び出し
-        fastapi_url = "https://0593-34-16-255-37.ngrok-free.app/generate"
+        fastapi_url = "https://7592-34-148-195-89.ngrok-free.app/generate"
         req = urllib.request.Request(
             url=fastapi_url,
             data=json.dumps(request_payload).encode('utf-8'),
@@ -93,18 +93,20 @@ def lambda_handler(event, context):
         print("POST")
         # レスポンスを解析
         with urllib.request.urlopen(req) as response:
-            response_body = json.loads(response['generated_text'].read().decode('utf-8'))
-            #response_body = json.loads(response.read().decode('utf-8')) 
+            #response_body = json.loads(response['generated_text'].read().decode('utf-8'))
+            response_body = json.loads(response.read().decode('utf-8')) 
             print("FastAPI response:", json.dumps(response_body, default=str))
        
 
         # 応答の検証
-        if not response_body.get('output') or not response_body['output'].get('message') or not response_body['output']['message'].get('content'):
-            raise Exception("No response content from the model")
+        #if not response_body.get('output') or not response_body['output'].get('message') or not response_body['output']['message'].get('content'):
+        if not response_body.get('generated_text'):
+         raise Exception("No response content from the model")
         
         # アシスタントの応答を取得
-        assistant_response = response_body['output']['message']['content'][0]['text']
-        
+        #assistant_response = response_body['output']['message']['content'][0]['text']
+        assistant_response = response_body['generated_text']
+
         # アシスタントの応答を会話履歴に追加
         messages.append({
             "role": "assistant",
